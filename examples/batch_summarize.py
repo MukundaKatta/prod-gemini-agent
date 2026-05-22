@@ -97,8 +97,10 @@ def main() -> int:
     agent = ProductionAgent(
         provider=governed_provider,
         fleet=Fleet(max_workers=8),
-        retry_policy=RetryPolicy(max_attempts=3, base_delay_s=0.02),
-        breaker=CircuitBreaker(failure_threshold=3, cooldown_s=0.3),
+        # 5 attempts gives the retry layer enough room to ride through both
+        # the 18% rate-limit error rate and the synthetic three-error burst.
+        retry_policy=RetryPolicy(max_attempts=5, base_delay_s=0.02),
+        breaker=CircuitBreaker(failure_threshold=4, cooldown_s=0.3),
         budget=BudgetWindow(cap_usd=0.05, window_s=60.0),
         cache=ResponseCache(maxsize=256),
         trace=RunTrace(),
