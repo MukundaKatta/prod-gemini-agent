@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "prod-gemini-agent"
+version = "0.1.0"
+description = "Reference production-grade Gemini agent. Same task, two scenes: notebook-grade vs governed."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Mukunda Katta", email = "mukunda.vjcs6@gmail.com" }]
+keywords = ["gemini", "agents", "llm", "production", "google-cloud", "observability"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries",
+]
+dependencies = []
+
+[project.optional-dependencies]
+gemini = ["google-generativeai>=0.7"]
+vertex = ["google-cloud-aiplatform>=1.60"]
+dev = ["pytest>=7"]
+
+[project.urls]
+Homepage = "https://github.com/MukundaKatta/prod-gemini-agent"
+Repository = "https://github.com/MukundaKatta/prod-gemini-agent"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+prod_gemini_agent = ["py.typed"]
