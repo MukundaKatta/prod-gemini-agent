@@ -42,6 +42,12 @@ No API key needed. The demo runs against `FakeGeminiProvider(seed=7)` so it is d
 
 Same input, same provider, same 18% transient failure rate. The baseline drops six summaries. The governed run keeps all twenty, hard-caps spend at $0.05, and writes an audit log to disk.
 
+## Architecture
+
+![prod-gemini-agent architecture: a batch of (doc-id, prompt) tasks is dispatched by a concurrent fleet, and each Gemini call passes through a per-call governance pipeline (cache, sliding USD budget, circuit breaker, bounded retry, the Gemini call with cost math, and a trace). The run emits a report (cost, latency p50/p95, retries, cache hits, breaker trips, budget) and an audit log. A raw notebook agent drops 6 of 20 calls; the governed agent keeps all 20, caps spend, and audits everything.](docs/architecture.png)
+
+Each Gemini call is wrapped by seven small governance pieces: concurrent dispatch, a sliding USD budget, a circuit breaker, bounded retry with jitter, response caching, cost math, and a per-call trace. Same input and same transient-failure rate, the baseline drops summaries while the governed run keeps all of them under a hard spend cap.
+
 ## Governance map
 
 Each governance feature lives in one small module and mirrors a published lib:
