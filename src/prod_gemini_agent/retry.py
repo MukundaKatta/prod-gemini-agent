@@ -44,8 +44,17 @@ def retry_call(
 
     A non-retryable error is re-raised on the spot. Anything that is not
     a ``ProviderError`` bubbles up untouched so unrelated bugs surface fast.
+
+    Raises ``ValueError`` if ``max_attempts`` is not at least 1: a retry
+    budget that never runs the call is a configuration mistake, and failing
+    loudly here beats the confusing ``TypeError`` you would otherwise get
+    under ``python -O`` (which strips the internal assertion).
     """
     p = policy or RetryPolicy()
+    if p.max_attempts < 1:
+        raise ValueError(
+            f"RetryPolicy.max_attempts must be >= 1, got {p.max_attempts}"
+        )
     last_exc: ProviderError | None = None
     for attempt in range(p.max_attempts):
         try:
