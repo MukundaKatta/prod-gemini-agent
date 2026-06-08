@@ -9,11 +9,14 @@ This is a reference project for the Google for Startups AI Agents Challenge (Tra
 ```bash
 git clone https://github.com/MukundaKatta/prod-gemini-agent.git
 cd prod-gemini-agent
-python3 -m pytest tests/         # 33 tests, ~0.5 s
+python3 -m unittest discover -s tests   # 42 tests, std-lib only, ~0.4 s
 python3 examples/batch_summarize.py
 ```
 
-No API key needed. The demo runs against `FakeGeminiProvider(seed=7)` so it is deterministic. Set `GEMINI_API_KEY` to run the same script against real Gemini 2.0 Flash.
+No API key needed, and no third-party packages to install. The test suite uses
+only the Python standard library (`unittest`), and the demo runs against
+`FakeGeminiProvider(seed=7)` so it is deterministic. Set `GEMINI_API_KEY` to run
+the same script against real Gemini 2.0 Flash.
 
 ## What the demo prints
 
@@ -94,12 +97,28 @@ src/prod_gemini_agent/
   agent.py      # ProductionAgent (composed) + raw baseline
 examples/
   batch_summarize.py   # 90-second demo
-tests/                 # 33 tests, FakeGeminiProvider only
+tests/                 # 42 std-lib unittest tests, FakeGeminiProvider only
 docs/
   DEPLOY.md            # Vertex AI + Cloud Run notes
   DEMO_SCRIPT.md       # 90s video script
 SUBMISSION.md          # Devpost write-up
 ```
+
+## Tests and CI
+
+The suite is pure standard library, so it runs anywhere a recent CPython does,
+with nothing to install:
+
+```bash
+python3 -m unittest discover -s tests        # all 42 tests
+python3 -m unittest discover -s tests -v     # one line per test
+python3 -m unittest tests.test_retry         # a single module
+```
+
+GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs the
+same suite on Python 3.9–3.13, byte-compiles every source file, builds the wheel
+and sdist, and asserts the `py.typed` marker actually ships in the wheel so the
+package's type hints reach downstream users.
 
 ## License
 
